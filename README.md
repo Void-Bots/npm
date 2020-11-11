@@ -1,5 +1,5 @@
 # VoidBin-NPM
-An easier way to use voidbin.cc
+An easier way to use [voidbin.cc](https://voidbin.cc)
 
 ## Installation
 ```
