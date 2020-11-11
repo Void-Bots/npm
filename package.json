@@ -1,25 +1,24 @@
 {
-  "name": "voidbin",
-  "version": "1.0.1",
-  "description": "An easier way to use voidbin.cc",
+  "name": "voidbots",
+  "version": "1.0.0",
+  "description": "An official module for interacting with the voidbots.net API",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheVoidPros/VoidBin-NPM.git"
+    "url": "git+https://github.com/TheVoidPros/VoidBots-NPM.git"
   },
-  "keywords": [
-    "code"
-  ],
+  "keywords": [],
   "author": "DanPlayz",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TheVoidPros/VoidBin-NPM/issues"
+    "url": "https://github.com/TheVoidPros/VoidBots-NPM/issues"
   },
-  "homepage": "https://github.com/TheVoidPros/VoidBin-NPM#readme",
+  "homepage": "https://github.com/TheVoidPros/VoidBots-NPM#readme",
   "dependencies": {
     "node-fetch": "^2.6.1"
-  }
+  },
+  "devDependencies": {}
 }

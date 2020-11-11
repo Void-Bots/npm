@@ -1,64 +1,118 @@
+const EventEmitter = require('events');
 const fetch = require("node-fetch");
 
-class VoidBin {
-	constructor() {}
-	
-    /**
-     * POST to VoidBin and return the URL
-     * 
-     * @param { string } title - The title of the content.
-	 * @param { string } content - The content of what you wish to post to VoidBin.
-	 * @param { string } language - The hightlight language.
-	 * @param { string } expiration - The expiration timestamp.
-	 * @param { boolean } view_destroy - Should this be deleted on first view?
-     * @returns { string } The URL of the created Paste
-     * 
-     * @example
-     * const VoidBin = require("voidbin");
-     * const paste = new VoidBin();
-     * 
-     * paste.post("VoidBin NPM Example", "<a href='https://voidbin.cc'>Home Page</a>", "html", "2w", false)
-     *      .then(url => console.log(url))
-     *      .catch(err => console.log(err));
-     */
-    async post(title, content, language, expiration, view_destroy) {
-		const res = await fetch(`https://voidbin.cc/api/new`, {
-		  method: 'POST',
-		  body: JSON.stringify({
-		    title: title || 'No title',
-		    content: content || 'No content',
-		    code_language: language || 'text',
-		    paste_expiration: expiration || '2w',
-		    view_destroy: view_destroy || false,
-		  }),
-		  headers: { 'Content-Type': 'application/json' }
-		})
-		  
-        if (res.status === 200) {
-            const json = await res.json();
-            return `https://voidbin.cc/paste/${json.pasteID}`;
-        }
+const isLib = (library, client) => {
+  try {
+    const lib = require.cache[require.resolve(library)];
+    return lib && client instanceof lib.exports.Client;
+  } catch (e) {
+    return false;
+  }
+};
 
-        return res.statusText;
+const isASupportedLibrary = client => isLib('discord.js', client) || isLib('eris', client);
+
+class VoidBots extends EventEmitter {
+   /**
+   * Creates a new VoidBots Instance.
+   * @param {string} token Your voidbots.net token for this bot.
+   * @param {Object} [options] Your VBAPI options.
+   * @param {number} [options.statsInterval=1800000] How often the autoposter should post stats in ms. May not be smaller than 900000 and defaults to 1800000.
+   * @param {any} [client] Your Client instance, if present and supported it will auto update your stats every `options.statsInterval` ms.
+   */
+	constructor(token, options, client) {
+    super();
+    this.token = token;
+    if(isASupportedLibary(options)) {
+      client = options;
+      options = {};
+    }
+    this.options = options || {};
+
+    if (client && isASupportedLibrary(client)) {
+      if (!this.options.statsInterval) this.options.statsInterval = 1800000;
+      if (this.options.statsInterval < 900000) throw new Error('statsInterval may not be shorter than 900000 (15 minutes)');
+
+      /**
+       * Event that fires when the stats have been posted successfully by the autoposter
+       * @event posted
+       */
+
+      /**
+       * Event to notify that the autoposter post request failed
+       * @event error
+       * @param {error} error The error
+       */
+
+      this.client = client;
+      this.client.on('ready', () => {
+        this.postStats()
+          .then(() => this.emit('posted'))
+          .catch(e => this.emit('error', e));
+        setInterval(() => {
+          this.postStats()
+            .then(() => this.emit('posted'))
+            .catch(e => this.emit('error', e));
+        }, this.options.statsInterval);
+      });
+    } else if (client) {
+      console.error(`[voidbots.js autopost] The provided client is not supported. Please add an issue or pull request to the github repo https://github.com/TheVoidPros/voidbots.js`); // eslint-disable-line no-console
     }
 
+  }
+	
     /**
-     * GET from a VoidBin Code and return the content
-     * 
-     * @param { string } code - The Code of the Paste
-     * @returns { string } The content of the URL
-     * 
-     * @example
-     * const VoidBin = require("voidbin");
-     * const paste = new VoidBin();
-     * 
-     * paste.get("0gtDs3")
-     *      .then(content => console.log(content))
-     *      .catch(err => console.log(err));
+     * Post Stats to Void Bots.
+     * @param {number|number[]} serverCount The server count of your bot.
+     * @param {number} [shardId] The ID of this shard.
+     * @param {number} [shardCount] The count of all shards of your bot.
+     * @returns {string}
      */
-    async get(code) {
-        const res = await fetch('https://voidbin.cc/raw/'+code);
+    async postStats(serverCount, shardId, shardCount) {
+		  if(!serverCount ) throw new Error('postStats requires 1 argument');
+		  const data = {};
+		
+      if(serverCount) {
+        data.server_count = serverCount;
+        data.shardId = shardId;
+        data.shard_count = shardCount;
+      } else {
+        data.server_count = this.client.guilds.size || this.client.guilds.cache.size;
+        if(this.client.shard && this.client.shard.count) {
+          if (this.client.shard.ids && this.client.shard.ids.length === 1 && this.client.shard.count > 1) {
+            data.shard_id = this.client.shard.ids[0];
+          } else {
+            data.shard_id = this.client.shard.id;
+          }
+        } else if (this.client.shards && this.client.shards.size !== 1) {
+          data.shard_count = this.client.shard.count;
+        }
+      }
+      
+      if(!this.token) return console.warn('[voidbots.js] Warning: No VB token has been provided.');
+
+      const res = await fetch(`https://voidbots.net/api/auth/stats/${this.client.user.id}`, {
+        method: "POST",
+        headers: { 
+          Authorization: `${this.token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      const response = await res.text();
+
+      return response;
+    }
+	
+    /**
+     * Returns true if a user has voted for your bot in the last 12h.
+     * @param { string } id - The ID of the user to check for.
+     * @returns { string } The json content from the api.
+     */
+    async hasVoted(id) {
+        const res = await fetch(`https://voidbots.net/api/auth/voted/${id}`, { headers: { 'voter': `${id}` } });
         return res.text();
     }
 }
-module.exports = VoidBin;
+module.exports = VoidBots;
