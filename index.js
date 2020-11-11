@@ -17,19 +17,19 @@ class VoidBin {
      * const VoidBin = require("voidbin");
      * const paste = new VoidBin();
      * 
-     * paste.post("Lorem ipsum")
+     * paste.post("VoidBin NPM Example", "<a href='https://voidbin.cc'>Home Page</a>", "html", "2w", false)
      *      .then(url => console.log(url))
      *      .catch(err => console.log(err));
      */
-    async post(options) {
+    async post(title, content, language, expiration, view_destroy) {
 		const res = await fetch(`https://voidbin.cc/api/new`, {
 		  method: 'POST',
 		  body: JSON.stringify({
-		    title: options.title || 'No title',
-		    content: options.content || 'No content',
-		    code_language: options.language || 'text',
-		    paste_expiration: options.expiration || '2w',
-		    view_destroy: options.view_destroy || false,
+		    title: title || 'No title',
+		    content: content || 'No content',
+		    code_language: language || 'text',
+		    paste_expiration: expiration || '2w',
+		    view_destroy: view_destroy || false,
 		  }),
 		  headers: { 'Content-Type': 'application/json' }
 		})
@@ -52,7 +52,7 @@ class VoidBin {
      * const VoidBin = require("voidbin");
      * const paste = new VoidBin();
      * 
-     * paste.get("https://voidbin.cc/raw/foradowute")
+     * paste.get("0gtDs3")
      *      .then(content => console.log(content))
      *      .catch(err => console.log(err));
      */
