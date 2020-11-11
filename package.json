@@ -1,0 +1,25 @@
+{
+  "name": "voidbin",
+  "version": "1.0.0",
+  "description": "An easier way to use voidbin.cc",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheVoidPros/VoidBin-NPM.git"
+  },
+  "keywords": [
+    "code"
+  ],
+  "author": "DanPlayz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TheVoidPros/VoidBin-NPM/issues"
+  },
+  "homepage": "https://github.com/TheVoidPros/VoidBin-NPM#readme",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
