@@ -23,7 +23,7 @@ class VoidBots extends EventEmitter {
 	constructor(token, options, client) {
     super();
     this.token = token;
-    if(isASupportedLibary(options)) {
+    if(isASupportedLibrary(options)) {
       client = options;
       options = {};
     }
