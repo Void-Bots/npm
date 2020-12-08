@@ -56,7 +56,7 @@ class VoidBots extends EventEmitter {
         }, this.options.statsInterval);
       });
     } else if (client) {
-      console.error(`[voidbots.js autopost] The provided client is not supported. Please add an issue or pull request to the github repo https://github.com/TheVoidPros/voidbots.js`); // eslint-disable-line no-console
+      console.error(`[voidbots autopost] The provided client is not supported. Please add an issue or pull request to the github repo https://github.com/TheVoidDevs/VoidBots-NPM`); // eslint-disable-line no-console
     }
 
   }
@@ -89,7 +89,7 @@ class VoidBots extends EventEmitter {
         }
       }
       
-      if(!this.token) return console.warn('[voidbots.js] Warning: No VB token has been provided.');
+      if(!this.token) return console.warn('[voidbots] Warning: No VB token has been provided.');
 
       const res = await fetch(`https://voidbots.net/api/auth/stats/${this.client.user.id}`, {
         method: "POST",
@@ -114,5 +114,55 @@ class VoidBots extends EventEmitter {
         const res = await fetch(`https://voidbots.net/api/auth/voted/${id}`, { headers: { 'voter': `${id}` } });
         return res.text();
     }
+
+    async getInfo() {
+      const res = await fetch(`https://voidbots.net/api/auth/info/${this.client.user.id}`, {
+        method: "Get",
+        headers: { 
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      const response = await res.json();
+
+      return response;
+    }
+
+    async getReviews() {
+      if(!this.token) return console.warn('[voidbots] Warning: No VB token has been provided.');
+
+      const res = await fetch(`https://voidbots.net/api/auth/reviews/${this.client.user.id}`, {
+        method: "POST",
+        headers: { 
+          Authorization: `${this.token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      const response = await res.json();
+
+      return response;
+    }
+
+    async getAnalytics() {
+      if(!this.token) return console.warn('[voidbots] Warning: No VB token has been provided.');
+
+      const res = await fetch(`https://voidbots.net/api/auth/analytics/${this.client.user.id}`, {
+        method: "POST",
+        headers: { 
+          Authorization: `${this.token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      const response = await res.json();
+
+      return response;
+    }
+
+
 }
 module.exports = VoidBots;
