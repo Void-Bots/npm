@@ -64,34 +64,26 @@ class VoidBots extends EventEmitter {
     /**
      * Post Stats to Void Bots.
      * @param {number|number[]} serverCount The server count of your bot.
-     * @param {number} [shardId] The ID of this shard.
      * @param {number} [shardCount] The count of all shards of your bot.
      * @returns {string}
      */
-    async postStats(serverCount, shardId, shardCount) {
-		  if(!serverCount ) throw new Error('postStats requires 1 argument');
+    async postStats(serverCount, shardCount = 0) {
+		  if(!serverCount) throw new Error('[voidbots] postStats: missing "serverCount"');
 		  const data = {};
 		
       if(serverCount) {
         data.server_count = serverCount;
-        data.shardId = shardId;
         data.shard_count = shardCount;
       } else {
         data.server_count = this.client.guilds.size || this.client.guilds.cache.size;
-        if(this.client.shard && this.client.shard.count) {
-          if (this.client.shard.ids && this.client.shard.ids.length === 1 && this.client.shard.count > 1) {
-            data.shard_id = this.client.shard.ids[0];
-          } else {
-            data.shard_id = this.client.shard.id;
-          }
-        } else if (this.client.shards && this.client.shards.size !== 1) {
+        if (this.client.shards && this.client.shards.size !== 1) {
           data.shard_count = this.client.shard.count;
         }
       }
       
       if(!this.token) return console.warn('[voidbots] Warning: No VB token has been provided.');
 
-      const res = await fetch(`https://voidbots.net/api/auth/stats/${this.client.user.id}`, {
+      const res = await fetch(`https://api.voidbots.net/bot/stats/${this.client.user.id}`, {
         method: "POST",
         headers: { 
           Authorization: `${this.token}`,
@@ -111,14 +103,20 @@ class VoidBots extends EventEmitter {
      * @returns { string } The json content from the api.
      */
     async hasVoted(id) {
-        const res = await fetch(`https://voidbots.net/api/auth/voted/${id}`, { headers: { 'voter': `${id}` } });
-        return res.text();
+      if(!this.token) return console.warn('[voidbots] Warning: No VB token has been provided.');
+      const res = await fetch(`https://api.voidbots.net/bot/voted/${this.client.user.id}/${id}`, { headers: { 
+        Authorization: `${this.token}`,
+        "Content-Type": "application/json"
+      }});
+      return res.text();
     }
 
-    async getInfo() {
-      const res = await fetch(`https://voidbots.net/api/auth/info/${this.client.user.id}`, {
-        method: "Get",
-        headers: { 
+    async getBotInfo(id) {
+      if(!this.token) return console.warn('[voidbots] Warning: No VB token has been provided.');
+      const res = await fetch(`https://api.voidbots.net/bot/info/${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `${this.token}`,
           "Content-Type": "application/json"
         },
         body: JSON.stringify(data)
@@ -132,7 +130,7 @@ class VoidBots extends EventEmitter {
     async getReviews() {
       if(!this.token) return console.warn('[voidbots] Warning: No VB token has been provided.');
 
-      const res = await fetch(`https://voidbots.net/api/auth/reviews/${this.client.user.id}`, {
+      const res = await fetch(`https://api.voidbots.net/bot/reviews/${this.client.user.id}`, {
         method: "POST",
         headers: { 
           Authorization: `${this.token}`,
@@ -149,7 +147,7 @@ class VoidBots extends EventEmitter {
     async getAnalytics() {
       if(!this.token) return console.warn('[voidbots] Warning: No VB token has been provided.');
 
-      const res = await fetch(`https://voidbots.net/api/auth/analytics/${this.client.user.id}`, {
+      const res = await fetch(`https://api.voidbots.net/bot/analytics/${this.client.user.id}`, {
         method: "POST",
         headers: { 
           Authorization: `${this.token}`,
