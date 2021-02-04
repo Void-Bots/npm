@@ -144,4 +144,8 @@ class VoidBots extends EventEmitter {
    }
 
 }
-module.exports = VoidBots;
+
+module.exports = {
+	VoidBots,
+	version: require('./package.json').version
+};
