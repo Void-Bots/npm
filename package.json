@@ -3,6 +3,7 @@
   "version": "2.1.0",
   "description": "An official module for interacting with the voidbots.net API",
   "main": "index.js",
+  "typings": "index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
