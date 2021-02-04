@@ -138,7 +138,7 @@ class VoidBots extends EventEmitter {
       }).then(res => res.json());
     }
 
-   static tokenAvailable() {
+   tokenAvailable() {
      if (!this.token) throw new ReferenceError('No VoidBots token found in this instance');
      return true;
    }
