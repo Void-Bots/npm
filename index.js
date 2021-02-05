@@ -14,6 +14,10 @@ const isLib = (library, client) => {
 const isASupportedLibrary = client => isLib('discord.js', client) || isLib('eris', client);
 
 class VoidBots extends EventEmitter {
+	
+	
+   static version = require('./package.json').version;
+
    /**
    * Creates a new VoidBots Instance.
    * @param {string} token Your voidbots.net token for this bot.
@@ -138,10 +142,11 @@ class VoidBots extends EventEmitter {
       }).then(res => res.json());
     }
 
-   static tokenAvailable() {
+   tokenAvailable() {
      if (!this.token) throw new ReferenceError('No VoidBots token found in this instance');
      return true;
    }
 
 }
+
 module.exports = VoidBots;
