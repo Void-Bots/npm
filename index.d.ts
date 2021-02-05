@@ -56,7 +56,8 @@ export interface BotAnalytics{
 export type Response<T> = T | { message: string } | { error: string };
 
 export class VoidBots extends EventEmitter{
-
+    
+    public static version: string;
     public token: string;
 
     public constructor(token: string, options: any, client: any);
