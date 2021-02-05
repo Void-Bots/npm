@@ -1,6 +1,6 @@
 {
   "name": "voidbots",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "An official module for interacting with the voidbots.net API",
   "main": "index.js",
   "typings": "index.d.ts",
