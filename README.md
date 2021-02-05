@@ -13,8 +13,8 @@ Documentation can be found [here](https://docs.voidbots.net/)
 ```js
 const Discord = require("discord.js");
 const client = new Discord.Client();
-const VoidBotsAPI = require("voidbots");
-const voidbots = new VoidBotsAPI.VoidBots('Your voidbots.net token', client);
+const VoidBotsClient = require("voidbots");
+const voidbots = new VoidBotsClient('Your voidbots.net token', client);
 
 // Optional events
 voidbots.on('posted', () => {
