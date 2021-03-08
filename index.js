@@ -19,10 +19,10 @@ class VoidBots extends EventEmitter {
    static version = require('./package.json').version;
 
    /**
-   * Creates a new VoidBots Instance.
-   * @param {string} token Your voidbots.net token for this bot.
-   * @param {Object} [options] Your VBAPI options.
-   * @param {number} [options.statsInterval=1800000] How often the autoposter should post stats in ms. May not be smaller than 900000 and defaults to 1800000.
+   * Creates a new VoidBots instance.
+   * @param {string} token Your VoidBots.net token.
+   * @param {Object} [options] Your VoidBotsAPI options.
+   * @param {number} [options.statsInterval=1800000] How often the autoposter should post stats in milliseconds. May not be smaller than 900000 and defaults to 1800000.
    * @param {any} [client] Your Client instance, if present and supported it will auto update your stats every `options.statsInterval` ms.
    */
     constructor(token, options, client) {
@@ -38,18 +38,18 @@ class VoidBots extends EventEmitter {
         client = options;
         options = {};
       }
-      this.options = options || {};
-      if (!(client && isASupportedLibrary(client))) return console.error("Argument 'client' must be a client instance of a supported library (discord.js or eris)");
+      this.options = options ?? {};
+      if (!(client && isASupportedLibrary(client))) throw "Argument 'client' must be a client instance of a supported library (Discord.js or Eris)";
       if (typeof this.options.statsInterval !== 'number') this.options.statsInterval = 1800000;
       if (this.options.statsInterval < 900000) throw new RangeError("'options.statsInterval' may not be shorter than 900000 milliseconds (15 minutes)");
 
       /**
-       * Event that fires when the stats have been posted successfully by the autoposter
+       * Event that fires when the stats have been posted successfully by the autoposter.
        * @event posted
        */
 
       /**
-       * Event to notify that the autoposter post request failed
+       * Event to notify that the autoposter request failed.
        * @event error
        * @param {Error} error The error
        */
@@ -67,7 +67,7 @@ class VoidBots extends EventEmitter {
   }
 	
     /**
-     * Post Stats to Void Bots.
+     * Post stats to Void Bots.
      * @param {number|number[]} serverCount The server count of your bot.
      * @param {number} [shardCount] The count of all shards of your bot.
      * @returns {string}
@@ -75,12 +75,12 @@ class VoidBots extends EventEmitter {
     async postStats(serverCount, shardCount = 0) {
       this.tokenAvailable();
       if (!this.client) {
-        if (typeof serverCount !== 'number') throw new TypeError("[VoidBots → postStats()] Argument 'serverCount' must be a number");
-        if (typeof shardCount !== 'number') throw new TypeError("[VoidBots → postStats()] Argument 'shardCount' must be a number");
+        if (typeof serverCount !== 'number') throw new TypeError("[VoidBots → postStats()] Argument 'serverCount' must be a number.");
+        if (typeof shardCount !== 'number') throw new TypeError("[VoidBots → postStats()] Argument 'shardCount' must be a number.");
       }
       const data = {
-        server_count: this.client ? (this.client.guilds.size || this.client.guilds.cache.size) : serverCount,
-        shard_count: this.client && this.client.shards && this.client.shards.size > 1 ? this.client.shard.count : shardCount
+        server_count: this.client ? (this.client.guilds.size ?? this.client.guilds.cache.size) : serverCount,
+        shard_count: this.client?.shards?.size > 1 ? this.client?.shard?.count : shardCount
       };
 
       return fetch(`${baseURL}/bot/stats/${this.client.user.id}`, {
@@ -94,9 +94,9 @@ class VoidBots extends EventEmitter {
     }
 	
     /**
-     * Returns true if a user has voted for your bot in the last 12h.
+     * Returns true if a user has voted for your bot in the last 12 hours.
      * @param {string} id The ID of the user to check for.
-     * @returns {string} The JSON content from the api.
+     * @returns {string} The JSON content from the API.
      */
     async hasVoted(id) {
       this.tokenAvailable();
@@ -143,7 +143,7 @@ class VoidBots extends EventEmitter {
     }
 
    tokenAvailable() {
-     if (!this.token) throw new ReferenceError('No VoidBots token found in this instance');
+     if (!this.token) throw new ReferenceError('No VoidBots token found in this instance.');
      return true;
    }
 
