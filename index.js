@@ -83,14 +83,7 @@ class VoidBots extends EventEmitter {
         shard_count: this.client?.shards?.size > 1 ? this.client?.shard?.count : shardCount
       };
 
-      return fetch(`${baseURL}/bot/stats/${this.client.user.id}`, {
-        method: "POST",
-        headers: { 
-          Authorization: this.token,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      }).then(res => res.text());
+      return this._request(`/bot/stats/${this.client.user.id}`, "POST", data).then(res => res.text());
     }
 	
     /**
@@ -100,47 +93,34 @@ class VoidBots extends EventEmitter {
      */
     async hasVoted(id) {
       this.tokenAvailable();
-      return fetch(`${baseURL}/bot/voted/${this.client.user.id}/${id}`, {
-        headers: { 
-          Authorization: this.token,
-          "Content-Type": "application/json"
-        }
-      }).then(res => res.text());
+      return this._request(`/bot/voted/${this.client.user.id}/${id}`, "GET").then(res => res.text());
     }
 
     async getBotInfo(id) {
       this.tokenAvailable();
-      return fetch(`${baseURL}/bot/info/${id}`, {
-        headers: {
-          Authorization: this.token,
-          "Content-Type": "application/json"
-        }
-      }).then(res => res.json());
+      return this._request(`/bot/info/${id}`, "GET").then(res => res.json());
     }
 
     async getReviews() {
       this.tokenAvailable();
-      return fetch(`${baseURL}/bot/reviews/${this.client.user.id}`, {
-        method: "POST",
-        headers: { 
-          Authorization: this.token,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      }).then(res => res.json());
+      return this._request(`/bot/reviews/${this.client.user.id}`).then(res => res.json());
     }
 
     async getAnalytics() {
       this.tokenAvailable();
-      return fetch(`${baseURL}/bot/analytics/${this.client.user.id}`, {
-        method: "POST",
-        headers: { 
-          Authorization: this.token,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      }).then(res => res.json());
+      return this._request(`/bot/analytics/${this.client.user.id}`).then(res => res.json());
     }
+
+   _request(url, type = "POST", data = {}) {
+    return fetch(`${baseURL}${url}`, {
+      method: type,
+      headers: { 
+        Authorization: this.token,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    })
+   }
 
    tokenAvailable() {
      if (!this.token) throw new ReferenceError("No VoidBots token found in this instance.");
