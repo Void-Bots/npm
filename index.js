@@ -59,7 +59,7 @@ class VoidBots extends EventEmitter {
         async function post() {
           return this.postStats()
           .then(() => this.emit("posted"))
-          .catch(e => this.emit("error", e));
+          .catch((e) => this.emit("error", e));
         }
         await post();
         setInterval(post, this.options.statsInterval);
@@ -83,7 +83,7 @@ class VoidBots extends EventEmitter {
         shard_count: this.client?.shards?.size > 1 ? this.client?.shard?.count : shardCount
       };
 
-      return this._request(`/bot/stats/${this.client.user.id}`, "POST", data).then(res => res.text());
+      return this._request(`/bot/stats/${this.client.user.id}`, "POST", data).then((res) => res.text());
     }
 	
     /**
@@ -93,22 +93,22 @@ class VoidBots extends EventEmitter {
      */
     async hasVoted(id) {
       this.tokenAvailable();
-      return this._request(`/bot/voted/${this.client.user.id}/${id}`, "GET").then(res => res.text());
+      return this._request(`/bot/voted/${this.client.user.id}/${id}`, "GET").then((res) => res.text());
     }
 
     async getBotInfo(id) {
       this.tokenAvailable();
-      return this._request(`/bot/info/${id}`, "GET").then(res => res.json());
+      return this._request(`/bot/info/${id}`, "GET").then((res) => res.json());
     }
 
     async getReviews() {
       this.tokenAvailable();
-      return this._request(`/bot/reviews/${this.client.user.id}`).then(res => res.json());
+      return this._request(`/bot/reviews/${this.client.user.id}`).then((res) => res.json());
     }
 
     async getAnalytics() {
       this.tokenAvailable();
-      return this._request(`/bot/analytics/${this.client.user.id}`).then(res => res.json());
+      return this._request(`/bot/analytics/${this.client.user.id}`).then((res) => res.json());
     }
 
    _request(url, type = "POST", data = {}) {
