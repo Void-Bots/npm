@@ -1,6 +1,6 @@
-const EventEmitter = require('events');
-const fetch = require('node-fetch');
-const baseURL = 'https://api.voidbots.net';
+const EventEmitter = require("events");
+const fetch = require("node-fetch");
+const baseURL = "https://api.voidbots.net";
 
 const isLib = (library, client) => {
   try {
@@ -11,12 +11,12 @@ const isLib = (library, client) => {
   }
 };
 
-const isASupportedLibrary = client => isLib('discord.js', client) || isLib('eris', client);
+const isASupportedLibrary = (client) => isLib("discord.js", client) || isLib("eris", client);
 
 class VoidBots extends EventEmitter {
 	
 	
-   static version = require('./package.json').version;
+   static version = require("./package.json").version;
 
    /**
    * Creates a new VoidBots instance.
@@ -27,8 +27,8 @@ class VoidBots extends EventEmitter {
    */
     constructor(token, options, client) {
       super();
-      if (typeof token !== 'string') throw new TypeError("Argument 'token' must be a string");
-      Object.defineProperty(this, 'token', {
+      if (typeof token !== "string") throw new TypeError("Argument 'token' must be a string");
+      Object.defineProperty(this, "token", {
         value: token,
         enumerable: false,
         writable: true,
@@ -40,7 +40,7 @@ class VoidBots extends EventEmitter {
       }
       this.options = options ?? {};
       if (!(client && isASupportedLibrary(client))) throw "Argument 'client' must be a client instance of a supported library (Discord.js or Eris)";
-      if (typeof this.options.statsInterval !== 'number') this.options.statsInterval = 1800000;
+      if (typeof this.options.statsInterval !== "number") this.options.statsInterval = 1800000;
       if (this.options.statsInterval < 900000) throw new RangeError("'options.statsInterval' may not be shorter than 900000 milliseconds (15 minutes)");
 
       /**
@@ -55,11 +55,11 @@ class VoidBots extends EventEmitter {
        */
 
       this.client = client;
-      this.client.on('ready', async () => {
+      this.client.on("ready", async () => {
         async function post() {
           return this.postStats()
-          .then(() => this.emit('posted'))
-          .catch(e => this.emit('error', e));
+          .then(() => this.emit("posted"))
+          .catch((e) => this.emit("error", e));
         }
         await post();
         setInterval(post, this.options.statsInterval);
@@ -75,22 +75,15 @@ class VoidBots extends EventEmitter {
     async postStats(serverCount, shardCount = 0) {
       this.tokenAvailable();
       if (!this.client) {
-        if (typeof serverCount !== 'number') throw new TypeError("[VoidBots → postStats()] Argument 'serverCount' must be a number.");
-        if (typeof shardCount !== 'number') throw new TypeError("[VoidBots → postStats()] Argument 'shardCount' must be a number.");
+        if (typeof serverCount !== "number") throw new TypeError("[VoidBots → postStats()] Argument 'serverCount' must be a number.");
+        if (typeof shardCount !== "number") throw new TypeError("[VoidBots → postStats()] Argument 'shardCount' must be a number.");
       }
       const data = {
         server_count: this.client ? (this.client.guilds.size ?? this.client.guilds.cache.size) : serverCount,
         shard_count: this.client?.shards?.size > 1 ? this.client?.shard?.count : shardCount
       };
 
-      return fetch(`${baseURL}/bot/stats/${this.client.user.id}`, {
-        method: 'POST',
-        headers: { 
-          Authorization: this.token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      }).then(res => res.text());
+      return this._request(`/bot/stats/${this.client.user.id}`, "POST", data).then((res) => res.text());
     }
 	
     /**
@@ -100,50 +93,37 @@ class VoidBots extends EventEmitter {
      */
     async hasVoted(id) {
       this.tokenAvailable();
-      return fetch(`${baseURL}/bot/voted/${this.client.user.id}/${id}`, {
-        headers: { 
-          Authorization: this.token,
-          'Content-Type': 'application/json'
-        }
-      }).then(res => res.text());
+      return this._request(`/bot/voted/${this.client.user.id}/${id}`, "GET").then((res) => res.text());
     }
 
     async getBotInfo(id) {
       this.tokenAvailable();
-      return fetch(`${baseURL}/bot/info/${id}`, {
-        headers: {
-          Authorization: this.token,
-          'Content-Type': 'application/json'
-        }
-      }).then(res => res.json());
+      return this._request(`/bot/info/${id}`, "GET").then((res) => res.json());
     }
 
     async getReviews() {
       this.tokenAvailable();
-      return fetch(`${baseURL}/bot/reviews/${this.client.user.id}`, {
-        method: 'POST',
-        headers: { 
-          Authorization: this.token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      }).then(res => res.json());
+      return this._request(`/bot/reviews/${this.client.user.id}`).then((res) => res.json());
     }
 
     async getAnalytics() {
       this.tokenAvailable();
-      return fetch(`${baseURL}/bot/analytics/${this.client.user.id}`, {
-        method: 'POST',
-        headers: { 
-          Authorization: this.token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      }).then(res => res.json());
+      return this._request(`/bot/analytics/${this.client.user.id}`).then((res) => res.json());
     }
 
+   _request(url, type = "POST", data = {}) {
+    return fetch(`${baseURL}${url}`, {
+      method: type,
+      headers: { 
+        Authorization: this.token,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    })
+   }
+
    tokenAvailable() {
-     if (!this.token) throw new ReferenceError('No VoidBots token found in this instance.');
+     if (!this.token) throw new ReferenceError("No VoidBots token found in this instance.");
      return true;
    }
 
