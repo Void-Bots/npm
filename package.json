@@ -1,6 +1,6 @@
 {
   "name": "voidbots",
-  "version": "2.4.0",
+  "version": "2.5",
   "description": "An official module for interacting with the voidbots.net API",
   "main": "index.js",
   "typings": "index.d.ts",
@@ -19,8 +19,6 @@
   },
   "homepage": "https://github.com/TheVoidPros/VoidBots-NPM#readme",
   "dependencies": {
-    "express": "^4.17.1",
-    "localtunnel": "^2.0.1",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {}
