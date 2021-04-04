@@ -1,6 +1,12 @@
 const EventEmitter = require("events");
 const fetch = require("node-fetch");
+const localtunnel = require('localtunnel')
+const express = require('express')
 const baseURL = "https://api.voidbots.net";
+
+const app = express()
+const port = 5600
+app.use(express.json())
 
 const isLib = (library, client) => {
   try {
@@ -56,6 +62,29 @@ class VoidBots extends EventEmitter {
 
       this.client = client;
       this.client.on("ready", async () => {
+        let tunnel = await localtunnel({ port: port})
+        this.url = tunnel.url
+        this.auth = 
+        console.log(this.url)
+        fetch(`${baseURL}/bot/webhook/${this.client.user.id}`, {
+          method: 'post',
+          body: JSON.stringify({
+            webhook_url: tunnel.url,
+            webhook_auth: "UwU Faggot"
+
+          }),
+          headers: { 
+            'Authorization': this.token,
+            'Content-Type': 'application/json'
+          },
+        }).then(res => res.text()).then(console.log).catch(console.error)
+        
+        app.post('/', async (req, res, next) => {
+          this.emit('voted', req.body)
+        })
+        app.listen(port, async () => {
+          console.log(`Webserver Activated`)
+        })
         async function post() {
           return this.postStats()
           .then(() => this.emit("posted"))
