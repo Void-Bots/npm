@@ -24,4 +24,8 @@ voidbots.on('posted', () => {
 voidbots.on('error', e => {
  console.log(`Oops! ${e}`);
 })
+
+voidbots.on('voted', data => {
+  console.log(`${data.user} has voted for ${date.bot}`)
+})
 ```
