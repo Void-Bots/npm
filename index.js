@@ -63,7 +63,7 @@ class VoidBots extends EventEmitter {
           .then(() => this.emit("posted"))
           .catch((e) => this.emit("error", e));
         }
-        await post();
+        post();
         setInterval(post, this.options.statsInterval);
       });
   }
