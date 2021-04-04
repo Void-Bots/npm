@@ -1,12 +1,6 @@
 const EventEmitter = require("events");
 const fetch = require("node-fetch");
-const localtunnel = require('localtunnel')
-const express = require('express')
 const baseURL = "https://api.voidbots.net";
-
-const app = express()
-const port = 5600
-app.use(express.json())
 
 const isLib = (library, client) => {
   try {
@@ -29,6 +23,7 @@ class VoidBots extends EventEmitter {
    * @param {string} token Your VoidBots.net token.
    * @param {Object} [options] Your VoidBotsAPI options.
    * @param {number} [options.statsInterval=1800000] How often the autoposter should post stats in milliseconds. May not be smaller than 900000 and defaults to 1800000.
+   * @param {boolean} [options.webhookEnabled=false] Whether the webhook server is enabled
    * @param {any} [client] Your Client instance, if present and supported it will auto update your stats every `options.statsInterval` ms.
    */
     constructor(token, options, client) {
@@ -61,31 +56,8 @@ class VoidBots extends EventEmitter {
        */
 
       this.client = client;
-      this.client.on("ready", async () => {
-        let tunnel = await localtunnel({ port: port})
-        this.url = tunnel.url
-        this.auth = Math.random().toString(36).substring(20);
-        console.log(this.url)
-        fetch(`${baseURL}/bot/webhook/${this.client.user.id}`, {
-          method: 'post',
-          body: JSON.stringify({
-            webhook_url: tunnel.url,
-            webhook_auth: this.auth
-
-          }),
-          headers: { 
-            'Authorization': this.token,
-            'Content-Type': 'application/json'
-          },
-        }).then(res => res.text()).then(console.log).catch(console.error)
-        
-        app.post('/', async (req, res, next) => {
-          if (req.headers.Authorization !== this.auth) return res.status(401).end()
-          this.emit('voted', req.body)
-        })
-        app.listen(port, async () => {
-          console.log(`Webserver Activated`)
-        })
+      this.client.once("ready", async () => {
+        if(this.options.webhookEnabled) this._webhookServer();
         async function post() {
           return this.postStats()
           .then(() => this.emit("posted"))
@@ -139,6 +111,35 @@ class VoidBots extends EventEmitter {
     async getAnalytics() {
       this.tokenAvailable();
       return this._request(`/bot/analytics/${this.client.user.id}`).then((res) => res.json());
+    }
+
+    _webhookServer() {
+      if(this.Fudshjifgsdujytfryoiklajsdhnigdtswkuidfhbjsrfytusahkjhvf_FireOnce) throw Error('This function may only be run once.');
+      this.Fudshjifgsdujytfryoiklajsdhnigdtswkuidfhbjsrfytusahkjhvf_FireOnce = true;
+      let localtunnel, express;
+      try {
+        localtunnel = require('localtunnel'), express = require('express');
+      } catch (err) {
+        throw Error('Error while requiring packages (localtunnel, express)')
+      }
+      const app = express(), port = 5600
+      app.use(express.json())
+      let tunnel = await localtunnel({ port: port })
+      this.voteWebhook = { url: `${tunnel.url}/vote`, auth: _createKey(36) }
+      this._request(`/bot/votewebhook/${this.client.user.id}`, 'POST', { webhook_url: this.voteWebhook.url, webhook_auth: this.voteWebhook.auth });
+      app.post('/vote', async (req, res, next) => {
+        if (req.header('Authorization') !== this.voteWebhook.auth) return res.status(401).end();
+        this.emit('voted', req.body);
+        res.status(200).end();
+      });
+      app.listen(port, async () => { console.log(`Webhook server initialized`) });
+    }
+
+    _createKey(len=44) {
+      var text = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for (var i = 0; i < len; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
+      return text;
     }
 
    _request(url, type = "POST", data = {}) {
