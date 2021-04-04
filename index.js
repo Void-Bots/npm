@@ -58,15 +58,15 @@ class VoidBots extends EventEmitter {
       this.client = client;
       this.client.once("ready", () => {
         if(this.options.webhookEnabled) this._webhookServer();
-        async function post() {
-          return this.postStats()
-          .then(() => this.emit("posted"))
-          .catch((e) => this.emit("error", e));
+        async function post(vbClass) {
+          return vbClass.postStats()
+          .then(() => vbClass.emit("posted"))
+          .catch((e) => vbClass.emit("error", e));
         }
-        post();
+        post(this);
         setInterval(post, this.options.statsInterval);
       });
-  }
+    }
 	
     /**
      * Post stats to Void Bots.
@@ -125,7 +125,7 @@ class VoidBots extends EventEmitter {
       const app = express(), port = 5600
       app.use(express.json())
       let tunnel = await localtunnel({ port: port })
-      this.voteWebhook = { url: `${tunnel.url}/vote`, auth: _createKey(36) }
+      this.voteWebhook = { url: `${tunnel.url}/vote`, auth: this._createKey(36) }
       this._request(`/bot/votewebhook/${this.client.user.id}`, 'POST', { webhook_url: this.voteWebhook.url, webhook_auth: this.voteWebhook.auth });
       app.post('/vote', async (req, res, next) => {
         if (req.header('Authorization') !== this.voteWebhook.auth) return res.status(401).end();
