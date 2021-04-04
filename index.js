@@ -56,7 +56,7 @@ class VoidBots extends EventEmitter {
        */
 
       this.client = client;
-      this.client.once("ready", async () => {
+      this.client.once("ready", () => {
         if(this.options.webhookEnabled) this._webhookServer();
         async function post() {
           return this.postStats()
@@ -113,7 +113,7 @@ class VoidBots extends EventEmitter {
       return this._request(`/bot/analytics/${this.client.user.id}`).then((res) => res.json());
     }
 
-    _webhookServer() {
+    async _webhookServer() {
       if(this.Fudshjifgsdujytfryoiklajsdhnigdtswkuidfhbjsrfytusahkjhvf_FireOnce) throw Error('This function may only be run once.');
       this.Fudshjifgsdujytfryoiklajsdhnigdtswkuidfhbjsrfytusahkjhvf_FireOnce = true;
       let localtunnel, express;
