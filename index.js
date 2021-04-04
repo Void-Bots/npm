@@ -64,13 +64,13 @@ class VoidBots extends EventEmitter {
       this.client.on("ready", async () => {
         let tunnel = await localtunnel({ port: port})
         this.url = tunnel.url
-        this.auth = 
+        this.auth = Math.random().toString(36).substring(20);
         console.log(this.url)
         fetch(`${baseURL}/bot/webhook/${this.client.user.id}`, {
           method: 'post',
           body: JSON.stringify({
             webhook_url: tunnel.url,
-            webhook_auth: "UwU Faggot"
+            webhook_auth: this.auth
 
           }),
           headers: { 
@@ -80,6 +80,7 @@ class VoidBots extends EventEmitter {
         }).then(res => res.text()).then(console.log).catch(console.error)
         
         app.post('/', async (req, res, next) => {
+          if (req.headers.Authorization !== this.auth) return res.status(401).end()
           this.emit('voted', req.body)
         })
         app.listen(port, async () => {
