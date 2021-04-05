@@ -56,7 +56,8 @@ class VoidBots extends EventEmitter {
        */
 
       this.client = client;
-      this.client.once("ready", () => {
+      this.client.once("ready", async () => {
+        this.checkAuth()
         if(this.options.webhookEnabled) this._webhookServer();
         async function post(vbClass) {
           return vbClass.postStats()
@@ -96,6 +97,11 @@ class VoidBots extends EventEmitter {
     async hasVoted(id) {
       this.tokenAvailable();
       return this._request(`/bot/voted/${this.client.user.id}/${id}`, "GET").then((res) => res.text());
+    }
+    async checkAuth() {
+      this.tokenAvailable();
+      let data = await this._get(`/bot/info/${this.client.user.id}`, "GET").then((res) => res.json());
+      if (data.message === 'Invalid authorization key provided') throw Error('[VoidBots] Token is not valid')
     }
 
     async getBotInfo(id) {
@@ -152,9 +158,19 @@ class VoidBots extends EventEmitter {
       body: JSON.stringify(data)
     })
    }
+   _get(url) {
+    return fetch(`${baseURL}${url}`, {
+      method: 'GET',
+      headers: { 
+        Authorization: this.token,
+        "Content-Type": "application/json"
+      },
+    })
+   }
 
    tokenAvailable() {
      if (!this.token) throw new ReferenceError("No VoidBots token found in this instance.");
+     this.checkAuth()
      return true;
    }
 
