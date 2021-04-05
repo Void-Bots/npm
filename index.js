@@ -125,7 +125,7 @@ class VoidBots extends EventEmitter {
       const app = express(), port = 5600
       app.use(express.json())
       let tunnel = await localtunnel({ port: port })
-      this.voteWebhook = { url: `${tunnel.url}/vote`, auth: this._createKey(36) }
+      this.voteWebhook = { url: `${tunnel.url}/vote`, auth: this._createKey() }
       this._request(`/bot/votewebhook/${this.client.user.id}`, 'POST', { webhook_url: this.voteWebhook.url, webhook_auth: this.voteWebhook.auth });
       app.post('/vote', async (req, res, next) => {
         if (req.header('Authorization') !== this.voteWebhook.auth) return res.status(401).end();
@@ -135,11 +135,13 @@ class VoidBots extends EventEmitter {
       app.listen(port, async () => { console.log(`[Voidbots] Webhook server initialized`) });
     }
 
-    _createKey(len=44) {
-let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-      return Array.from({length: len}, () => str[Math.floor(Math.random() * str.length)]).join("")
-    }
-
+    _createKey(){
+let s=""
+for(let i = 0; i < 3; i++)s+=Math.random().toString(36).substr(2);
+s+=Math.random().toString(36).substr(2);
+while(s.length>36)s=s.substr(1)
+return s
+}
    _request(url, type = "POST", data = {}) {
     return fetch(`${baseURL}${url}`, {
       method: type,
