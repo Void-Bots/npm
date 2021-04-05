@@ -101,7 +101,7 @@ class VoidBots extends EventEmitter {
     async checkAuth() {
       this.tokenAvailable();
       let data = await this._get(`/bot/info/${this.client.user.id}`, "GET").then((res) => res.json());
-      if (data.message === 'Invalid authorization key provided') throw Error('Token is not valid')
+      if (data.message === 'Invalid authorization key provided') throw Error('[VoidBots] Token is not valid')
     }
 
     async getBotInfo(id) {
@@ -170,7 +170,7 @@ class VoidBots extends EventEmitter {
 
    tokenAvailable() {
      if (!this.token) throw new ReferenceError("No VoidBots token found in this instance.");
-     this.checkAuth
+     this.checkAuth()
      return true;
    }
 
