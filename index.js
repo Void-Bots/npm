@@ -114,8 +114,8 @@ class VoidBots extends EventEmitter {
     }
 
     async _webhookServer() {
-      if(this.Fudshjifgsdujytfryoiklajsdhnigdtswkuidfhbjsrfytusahkjhvf_FireOnce) throw Error('[Voidbots] This function may only be run once.');
-      this.Fudshjifgsdujytfryoiklajsdhnigdtswkuidfhbjsrfytusahkjhvf_FireOnce = true;
+      if(this.fired) throw Error('[Voidbots] This function may only be run once.');
+      this.fired = true;
       let localtunnel, express;
       try {
         localtunnel = require('localtunnel'), express = require('express');
