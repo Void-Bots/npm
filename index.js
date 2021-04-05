@@ -40,7 +40,7 @@ class VoidBots extends EventEmitter {
         options = {};
       }
       this.options = options ?? {};
-      if (!(client && isASupportedLibrary(client))) throw "[Voi dbots] Argument 'client' must be a client instance of a supported library (Discord.js or Eris)";
+      if (!(client && isASupportedLibrary(client))) throw "[Void bots] Argument 'client' must be a client instance of a supported library (Discord.js or Eris)";
       if (typeof this.options.statsInterval !== "number") this.options.statsInterval = 1800000;
       if (this.options.statsInterval < 900000) throw new RangeError("[Void bots] 'options.statsInterval' may not be shorter than 900000 milliseconds (15 minutes)");
 
