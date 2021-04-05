@@ -136,10 +136,8 @@ class VoidBots extends EventEmitter {
     }
 
     _createKey(len=44) {
-      var text = "";
-      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      for (var i = 0; i < len; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
-      return text;
+let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+      return Array.from({length: len}, () => str[Math.floor(Math.random() * str.length)]).join("")
     }
 
    _request(url, type = "POST", data = {}) {
