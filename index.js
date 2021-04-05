@@ -28,7 +28,7 @@ class VoidBots extends EventEmitter {
    */
     constructor(token, options, client) {
       super();
-      if (typeof token !== "string") throw new TypeError("Argument 'token' must be a string");
+      if (typeof token !== "string") throw new TypeError("[Voidbots] Argument 'token' must be a string");
       Object.defineProperty(this, "token", {
         value: token,
         enumerable: false,
@@ -40,9 +40,9 @@ class VoidBots extends EventEmitter {
         options = {};
       }
       this.options = options ?? {};
-      if (!(client && isASupportedLibrary(client))) throw "Argument 'client' must be a client instance of a supported library (Discord.js or Eris)";
+      if (!(client && isASupportedLibrary(client))) throw "[Voidbots] Argument 'client' must be a client instance of a supported library (Discord.js or Eris)";
       if (typeof this.options.statsInterval !== "number") this.options.statsInterval = 1800000;
-      if (this.options.statsInterval < 900000) throw new RangeError("'options.statsInterval' may not be shorter than 900000 milliseconds (15 minutes)");
+      if (this.options.statsInterval < 900000) throw new RangeError("[Voidbots] 'options.statsInterval' may not be shorter than 900000 milliseconds (15 minutes)");
 
       /**
        * Event that fires when the stats have been posted successfully by the autoposter.
@@ -114,7 +114,7 @@ class VoidBots extends EventEmitter {
     }
 
     async _webhookServer() {
-      if(this.Fudshjifgsdujytfryoiklajsdhnigdtswkuidfhbjsrfytusahkjhvf_FireOnce) throw Error('This function may only be run once.');
+      if(this.Fudshjifgsdujytfryoiklajsdhnigdtswkuidfhbjsrfytusahkjhvf_FireOnce) throw Error('[Voidbots] This function may only be run once.');
       this.Fudshjifgsdujytfryoiklajsdhnigdtswkuidfhbjsrfytusahkjhvf_FireOnce = true;
       let localtunnel, express;
       try {
@@ -154,7 +154,7 @@ class VoidBots extends EventEmitter {
    }
 
    tokenAvailable() {
-     if (!this.token) throw new ReferenceError("No VoidBots token found in this instance.");
+     if (!this.token) throw new ReferenceError("[Voidbots] No VoidBots token found in this instance.");
      return true;
    }
 
