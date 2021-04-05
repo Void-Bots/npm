@@ -40,9 +40,9 @@ class VoidBots extends EventEmitter {
         options = {};
       }
       this.options = options ?? {};
-      if (!(client && isASupportedLibrary(client))) throw "[Void bots] Argument 'client' must be a client instance of a supported library (Discord.js or Eris)";
+      if (!(client && isASupportedLibrary(client))) throw "[VoidBots] Argument 'client' must be a client instance of a supported library (Discord.js or Eris)";
       if (typeof this.options.statsInterval !== "number") this.options.statsInterval = 1800000;
-      if (this.options.statsInterval < 900000) throw new RangeError("[Void bots] 'options.statsInterval' may not be shorter than 900000 milliseconds (15 minutes)");
+      if (this.options.statsInterval < 900000) throw new RangeError("[VoidBots] 'options.statsInterval' may not be shorter than 900000 milliseconds (15 minutes)");
 
       /**
        * Event that fires when the stats have been posted successfully by the autoposter.
@@ -56,7 +56,8 @@ class VoidBots extends EventEmitter {
        */
 
       this.client = client;
-      this.client.once("ready", () => {
+      this.client.once("ready", async () => {
+        this.checkAuth()
         if(this.options.webhookEnabled) this._webhookServer();
         async function post(vbClass) {
           return vbClass.postStats()
@@ -77,8 +78,8 @@ class VoidBots extends EventEmitter {
     async postStats(serverCount, shardCount = 0) {
       this.tokenAvailable();
       if (!this.client) {
-        if (typeof serverCount !== "number") throw new TypeError("[Void bots → postStats()] Argument 'serverCount' must be a number.");
-        if (typeof shardCount !== "number") throw new TypeError("[Void bots → postStats()] Argument 'shardCount' must be a number.");
+        if (typeof serverCount !== "number") throw new TypeError("[VoidBots → postStats()] Argument 'serverCount' must be a number.");
+        if (typeof shardCount !== "number") throw new TypeError("[VoidBots → postStats()] Argument 'shardCount' must be a number.");
       }
       const data = {
         server_count: this.client ? (this.client.guilds.size ?? this.client.guilds.cache.size) : serverCount,
@@ -96,6 +97,11 @@ class VoidBots extends EventEmitter {
     async hasVoted(id) {
       this.tokenAvailable();
       return this._request(`/bot/voted/${this.client.user.id}/${id}`, "GET").then((res) => res.text());
+    }
+    async checkAuth() {
+      this.tokenAvailable();
+      let data = await this._get(`/bot/info/${this.client.user.id}`, "GET").then((res) => res.json());
+      if (data.message === 'Invalid authorization key provided') throw Error('[VoidBots] Token is not valid')
     }
 
     async getBotInfo(id) {
@@ -152,9 +158,19 @@ class VoidBots extends EventEmitter {
       body: JSON.stringify(data)
     })
    }
+   _get(url) {
+    return fetch(`${baseURL}${url}`, {
+      method: 'GET',
+      headers: { 
+        Authorization: this.token,
+        "Content-Type": "application/json"
+      },
+    })
+   }
 
    tokenAvailable() {
-     if (!this.token) throw new ReferenceError("[Void bots] No VoidBots token found in this instance.");
+     if (!this.token) throw new ReferenceError("[VoidBots] No VoidBots token found in this instance.");
+     this.checkAuth()
      return true;
    }
 
