@@ -26,6 +26,6 @@ voidbots.on('error', e => {
 })
 
 voidbots.on('voted', data => {
-  console.log(`${data.user} has voted for ${date.bot}`)
+  console.log(`${data.user} has voted for ${data.bot}`)
 })
 ```
