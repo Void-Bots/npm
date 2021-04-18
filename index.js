@@ -22,6 +22,7 @@ class VoidBots extends EventEmitter {
    * Creates a new VoidBots instance.
    * @param {string} token Your VoidBots.net token.
    * @param {Object} [options] Your VoidBotsAPI options.
+   * @param {boolean} [options.autoPost=false] Whether the autoposting system is enabled
    * @param {number} [options.statsInterval=1800000] How often the autoposter should post stats in milliseconds. May not be smaller than 900000 and defaults to 1800000.
    * @param {boolean} [options.webhookEnabled=false] Whether the webhook server is enabled
    * @param {any} [client] Your Client instance, if present and supported it will auto update your stats every `options.statsInterval` ms.
@@ -59,13 +60,15 @@ class VoidBots extends EventEmitter {
       this.client.once("ready", async () => {
         this.checkAuth()
         if(this.options.webhookEnabled) this._webhookServer();
-        async function post(vbClass) {
-          return vbClass.postStats()
-          .then(() => vbClass.emit("posted"))
-          .catch((e) => vbClass.emit("error", e));
-        }
-        post(this);
-        setInterval(post, this.options.statsInterval);
+      	if(this.options.autoPost) {
+          async function post(vbClass) {
+            return vbClass.postStats()
+            .then(() => vbClass.emit("posted"))
+            .catch((e) => vbClass.emit("error", e));
+          }
+          post(this);
+          setInterval(post, this.options.statsInterval);
+    	}
       });
     }
 	
