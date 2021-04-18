@@ -14,7 +14,7 @@ Documentation can be found [here](https://docs.voidbots.net/)
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const VoidBotsClient = require("voidbots");
-const voidbots = new VoidBotsClient('Your voidbots.net token', { webhookEnabled: true }, client);
+const voidbots = new VoidBotsClient('Your voidbots.net token', { autoPost: true, webhookEnabled: true }, client);
 
 // Optional events
 voidbots.on('posted', () => {
