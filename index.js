@@ -78,8 +78,8 @@ class VoidBots extends EventEmitter {
      */
     async postStats(server_count = 0, shard_count = 0) {
       this.tokenAvailable();
-      if (typeof server_count !== "number") throw new TypeError("[VoidBots → postStats()] Argument 'serverCount' must be a number.");
-      if (typeof shard_count !== "number") throw new TypeError("[VoidBots → postStats()] Argument 'shardCount' must be a number.");
+      if (typeof server_count !== "number" || isNaN(server_count)) throw new TypeError("[VoidBots → postStats()] Argument 'serverCount' must be a number.");
+      if (typeof shard_count !== "number" || isNaN(shard_count)) throw new TypeError("[VoidBots → postStats()] Argument 'shardCount' must be a number.");
 
       return this._request(`/bot/stats/${this.client.user.id}`, "POST", { server_count, shard_count }).then((res) => res.text());
     }
