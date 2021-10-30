@@ -1,6 +1,6 @@
 {
   "name": "voidbots",
-  "version": "2.6.2",
+  "version": "2.6.3",
   "description": "An official module for interacting with the voidbots.net API",
   "main": "index.js",
   "typings": "index.d.ts",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheVoidPros/VoidBots-NPM.git"
+    "url": "git+https://github.com/Void-Bots/npm.git"
   },
   "keywords": [],
   "author": "DanPlayz",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TheVoidPros/VoidBots-NPM/issues"
+    "url": "https://github.com/Void-Bots/npm/issues"
   },
-  "homepage": "https://github.com/TheVoidPros/VoidBots-NPM#readme",
+  "homepage": "https://docs.voidbots.net",
   "dependencies": {
     "express": "^4.17.1",
     "localtunnel": "^2.0.1",
